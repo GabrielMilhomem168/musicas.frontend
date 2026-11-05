@@ -14,28 +14,26 @@ async function buscarMusicas() {
                 <p class="detalhes">${musica.genero} | ${musica.ano} | ${musica.duracao} min</p>
                 <div class="acoes">
                     <a class="editar" href="editar.html?id=${musica.id}">Editar</a>
-                    <button class="apagar">Apagar</button>
+                    <button class="apagar" onclick="apagarMusica(${musica.id})">Apagar</button>
                 </div>
             </article>
-
-
-            
         `;
     });
 }
-app.post("/cadastrar", (request, response) => {
-    const { titulo, artista, genero, ano, duracao } = request.body;
 
-    const comandoInsert = "INSERT INTO musicas_seunome(titulo, artista, genero, ano, duracao) VALUES (?, ?, ?, ?, ?)";
+async function apagarMusica(id) {
+    const confirmou = confirm("Tem certeza que quer apagar essa música?");
 
-    sql.query(comandoInsert, [titulo, artista, genero, ano, duracao], (error) => {
-        if (error) {
-            console.log(error);
-            return;
-        }
+    if (!confirmou) {
+        return;
+    }
 
-        response.status(201).json({ mensagem: "Música cadastrada com sucesso!" });
+    const resposta = await fetch(`${urlBackend}/apagar/${id}`, {
+        method: "DELETE"
     });
-});
+
+    const dados = await resposta.json();
+    alert(dados.mensagem);
+}
 
 buscarMusicas();
